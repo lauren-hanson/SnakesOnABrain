@@ -41,7 +41,7 @@ class HandleRequests(BaseHTTPRequestHandler):
             else:
                 self._set_headers(200)
                 response = get_all_snakes()
-        
+
         elif resource == "owners":
             if id is not None:
                 self._set_headers(200)
@@ -51,11 +51,27 @@ class HandleRequests(BaseHTTPRequestHandler):
                 self._set_headers(200)
                 response = get_all_owners()
 
-        else: 
+        else:
             self._set_headers(404)
             response = {}
 
         self.wfile.write(json.dumps(response).encode())
+
+    def do_POST(self):
+        self._set_headers(201)
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+      
+        post_body = json.loads(post_body)
+
+        (resource, id) = self.parse_url(self.path)
+ 
+        new_snake = None
+        
+        if resource == "snakes":
+            new_snake = create_snake(post_body)
+       
+        self.wfile.write(json.dumps(new_snake).encode())
 
     def _set_headers(self, status):
         self.send_response(status)

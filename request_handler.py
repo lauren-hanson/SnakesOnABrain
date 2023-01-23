@@ -22,8 +22,8 @@ class HandleRequests(BaseHTTPRequestHandler):
     def do_GET(self):
         """Handles GET requests to the server """
         response = {}  # Default response
-        # Parse the URL and capture the tuple that is returned
         (resource, id) = self.parse_url(self.path)
+
         if resource == "species":
             if id is not None:
                 self._set_headers(200)
@@ -35,16 +35,21 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         elif resource == "snakes":
             if id is not None:
-                self._set_headers(200)
-                response = get_single_snakes(id)
-
+                # self._set_headers(200)
+                # response = get_single_snakes(id)
+                if "species" == 2:
+                    self._set_headers(200)
+                    response = get_single_snakes(id)
+                else:
+                    self._set_headers(405)
+                    response = "This species always lives in colonies and are never found alone."
             else:
                 self._set_headers(200)
                 response = get_all_snakes()
 
-        else: 
+        else:
             self._set_headers(404)
-            response = {}
+            response = "Info not supported."
 
         self.wfile.write(json.dumps(response).encode())
 

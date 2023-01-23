@@ -21,15 +21,30 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     def do_GET(self):
         """Handles GET requests to the server """
-        self._set_headers(200)
         response = {}  # Default response
         # Parse the URL and capture the tuple that is returned
         (resource, id) = self.parse_url(self.path)
         if resource == "species":
             if id is not None:
+                self._set_headers(200)
                 response = get_single_species(id)
+
             else:
+                self._set_headers(200)
                 response = get_all_species()
+
+        elif resource == "snakes":
+            if id is not None:
+                self._set_headers(200)
+                response = get_single_snakes(id)
+
+            else:
+                self._set_headers(200)
+                response = get_all_snakes()
+
+        else: 
+            self._set_headers(404)
+            response = {}
 
         self.wfile.write(json.dumps(response).encode())
 

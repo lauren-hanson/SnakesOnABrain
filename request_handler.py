@@ -41,6 +41,15 @@ class HandleRequests(BaseHTTPRequestHandler):
             else:
                 self._set_headers(200)
                 response = get_all_snakes()
+        
+        elif resource == "owners":
+            if id is not None:
+                self._set_headers(200)
+                response = get_single_owners(id)
+
+            else:
+                self._set_headers(200)
+                response = get_all_owners()
 
         else: 
             self._set_headers(404)

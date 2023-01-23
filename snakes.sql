@@ -1,5 +1,5 @@
 create table Species (
-	id INT,
+	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(50)
 );
 insert into Species (id, name) values (1, 'Procyon cancrivorus');
@@ -8,8 +8,10 @@ insert into Species (id, name) values (3, 'Pitangus sulphuratus');
 insert into Species (id, name) values (4, 'Nannopterum harrisi');
 insert into Species (id, name) values (5, 'Tamiasciurus hudsonicus');
 
+
+
 create table Owners (
-	id INT,
+	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	first_name VARCHAR(50),
 	last_name VARCHAR(50),
 	email VARCHAR(50)
@@ -26,7 +28,7 @@ insert into Owners (id, first_name, last_name, email) values (9, 'Jeanna', 'Dyas
 insert into Owners (id, first_name, last_name, email) values (10, 'Ulick', 'Drinkhill', 'udrinkhill9@wsj.com');
 
 create table Snakes (
-	id INT,
+	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	name VARCHAR(50),
 	owner_id INT,
 	species_id INT,

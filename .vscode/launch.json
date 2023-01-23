@@ -8,7 +8,7 @@
             "program": "./request_handler.py",
             "console": "integratedTerminal",
             "autoReload": {
-                "enable": true
+                "enable": false
             }
         }
     ]

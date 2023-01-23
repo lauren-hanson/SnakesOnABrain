@@ -58,19 +58,37 @@ class HandleRequests(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(response).encode())
 
     def do_POST(self):
-        self._set_headers(201)
+
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
-      
         post_body = json.loads(post_body)
 
         (resource, id) = self.parse_url(self.path)
- 
         new_snake = None
-        
+
         if resource == "snakes":
-            new_snake = create_snake(post_body)
-       
+            # self._set_headers(201)
+            
+            if "name" not in post_body:
+                self._set_headers(400)
+                new_snake = "Missing snake name"
+            elif "owner_id" not in post_body:
+                self._set_headers(400)
+                new_snake = "Missing owner information."
+            elif "species_id" not in post_body:
+                self._set_headers(400)
+                new_snake = "Missing species information."
+            elif "gender" not in post_body:
+                self._set_headers(400)
+                new_snake = "Missing gender information."
+            elif "color" not in post_body:
+                self._set_headers(400)
+                new_snake = "Missing color information."
+                
+            else: 
+                self._set_headers(201)
+                new_snake = create_snake(post_body)
+
         self.wfile.write(json.dumps(new_snake).encode())
 
     def _set_headers(self, status):

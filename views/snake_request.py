@@ -62,7 +62,7 @@ def create_snake(new_snake):
         INSERT INTO Snakes
             (name, owner_id, species_id, gender, color)
         VALUES
-            (?, ?, ?, ? , ?); 
+            (?, ?, ?, ?, ?); 
         """, (new_snake['name'], new_snake['owner_id'], new_snake['species_id'], new_snake['gender'], new_snake['color']))
 
         id = db_cursor.lastrowid

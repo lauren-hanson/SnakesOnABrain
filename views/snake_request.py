@@ -7,7 +7,6 @@ def get_all_snakes():
     with sqlite3.connect("./snakes.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
-
         db_cursor.execute("""
         SELECT
             s.id,
@@ -26,26 +25,19 @@ def get_all_snakes():
         JOIN Species sp 
             ON sp.id = s.species_id
         """)
-
         snakes = []
         dataset = db_cursor.fetchall()
-
         for row in dataset:
             snake = Snakes(row['id'], row['name'], row['owner_id'],
                            row['species_id'], row['gender'], row['color'])
             owner = Owners(row['owner_id'], row['owner_first'],
                            row['owner_last'], row['owner_email'])
-
             species = Species(row['species_id'], row['species_name'])
-
             del snake.owner_id
             del snake.species_id
-
             snake.owner = owner.__dict__
             snake.species = species.__dict__
-
             snakes.append(snake.__dict__)
-
     return snakes
 
 
@@ -93,7 +85,7 @@ def get_single_snakes(id):
         return snake.__dict__
 
 
-def get_snake_by_species(gender):
+def get_snake_by_species(species):
     with sqlite3.connect("./snakes.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -105,10 +97,18 @@ def get_snake_by_species(gender):
             s.owner_id,
             s.species_id,
             s.gender,
-            s.color
+            s.color, 
+            o.first_name owner_first, 
+            o.last_name owner_last, 
+            o.email owner_email, 
+            sp.name species_name
         FROM Snakes s
-        WHERE s.gender = ?
-        """, (gender, ))
+        JOIN Owners o 
+            ON o.id = s.owner_id
+        JOIN Species sp 
+            ON sp.id = s.species_id
+        WHERE s.species_id = ?
+        """, (species, ))
 
         snakes = []
         dataset = db_cursor.fetchall()
@@ -116,6 +116,18 @@ def get_snake_by_species(gender):
         for row in dataset:
             snake = Snakes(row['id'], row['name'], row['owner_id'],
                            row['species_id'], row['gender'], row['color'])
+
+            species = Species(row['species_id'], row['species_name'])
+
+            owner = Owners(row['owner_id'], row['owner_first'],
+                           row['owner_last'], row['owner_email'])
+
+            del snake.owner_id
+            del snake.species_id
+
+            snake.species = species.__dict__
+            snake.owner = owner.__dict__
+
             snakes.append(snake.__dict__)
 
     return snakes

@@ -68,8 +68,9 @@ class HandleRequests(BaseHTTPRequestHandler):
         else:
             (resource, query) = parsed
             # see if the query dictionary has an email key
-            if query.get('gender') and resource == 'snakes':
-                response = get_snake_by_species(query['gender'][0])
+            if query.get('species') and resource == 'snakes':
+                response = get_snake_by_species(query['species'][0])
+                self._set_headers(200)
 
         self.wfile.write(json.dumps(response).encode())
 

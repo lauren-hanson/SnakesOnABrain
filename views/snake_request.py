@@ -82,7 +82,11 @@ def get_single_snakes(self, id):
         snake.owner = owner.__dict__
         snake.species = species.__dict__
 
-        if snake.species_id == 2:
+        # if snake.species_id == 2:
+        #     self._set_headers(405)
+        #     return "This species always lives in colonies and are never found alone."
+
+        if snake.species['name'] == "Aonyx cinerea":
             self._set_headers(405)
             return "This species always lives in colonies and are never found alone."
         else:

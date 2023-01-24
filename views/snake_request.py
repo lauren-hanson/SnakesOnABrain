@@ -14,15 +14,15 @@ def get_all_snakes():
             s.owner_id,
             s.species_id,
             s.gender,
-            s.color, 
-            o.first_name owner_first, 
-            o.last_name owner_last, 
-            o.email owner_email, 
+            s.color,
+            o.first_name owner_first,
+            o.last_name owner_last,
+            o.email owner_email,
             sp.name species_name
         FROM Snakes s
-        JOIN Owners o 
+        JOIN Owners o
             ON o.id = s.owner_id
-        JOIN Species sp 
+        JOIN Species sp
             ON sp.id = s.species_id
         """)
         snakes = []
@@ -41,7 +41,7 @@ def get_all_snakes():
     return snakes
 
 
-def get_single_snakes(id):
+def get_single_snakes(self, id):
     with sqlite3.connect("./snakes.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
@@ -53,15 +53,15 @@ def get_single_snakes(id):
             s.owner_id,
             s.species_id,
             s.gender,
-            s.color, 
-            o.first_name owner_first, 
-            o.last_name owner_last, 
-            o.email owner_email, 
+            s.color,
+            o.first_name owner_first,
+            o.last_name owner_last,
+            o.email owner_email,
             sp.name species_name
         FROM Snakes s
-        JOIN Owners o 
+        JOIN Owners o
             ON o.id = s.owner_id
-        JOIN Species sp 
+        JOIN Species sp
             ON sp.id = s.species_id
         WHERE s.id = ?
         """, (id, ))
@@ -76,13 +76,19 @@ def get_single_snakes(id):
 
         species = Species(data['species_id'], data['species_name'])
 
-        del snake.owner_id
-        del snake.species_id
+        # del snake.owner_id
+        # del snake.species_id
 
         snake.owner = owner.__dict__
         snake.species = species.__dict__
 
-        return snake.__dict__
+        if snake.species_id == 2:
+            self._set_headers(405)
+            return "This species always lives in colonies and are never found alone."
+        else:
+            self._set_headers(200)
+            return snake.__dict__
+            # response = get_single_snakes(id)     
 
 
 def get_snake_by_species(species):
@@ -117,15 +123,14 @@ def get_snake_by_species(species):
             snake = Snakes(row['id'], row['name'], row['owner_id'],
                            row['species_id'], row['gender'], row['color'])
 
-            species = Species(row['species_id'], row['species_name'])
+            specie = Species(row['species_id'], row['species_name'])
 
             owner = Owners(row['owner_id'], row['owner_first'],
                            row['owner_last'], row['owner_email'])
 
             del snake.owner_id
             del snake.species_id
-
-            snake.species = species.__dict__
+            snake.specie = specie.__dict__
             snake.owner = owner.__dict__
 
             snakes.append(snake.__dict__)

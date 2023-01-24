@@ -26,7 +26,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         response = {}  # Default response
         parsed = self.parse_url(self.path)
         # Parse the URL and capture the tuple that is returned
-        
+
         if '?' not in self.path:
             (resource, id) = parsed
             if resource == "species":
@@ -40,15 +40,9 @@ class HandleRequests(BaseHTTPRequestHandler):
 
             elif resource == "snakes":
                 if id is not None:
-                    self._set_headers(200)
-                    response = get_single_snakes(id)
+                    # self._set_headers(200)
+                    response = get_single_snakes(self, id)
 
-                    # if "species" == 2:
-                    #     self._set_headers(200)
-                    #     response = get_single_snakes(id)
-                    # else:
-                    #     self._set_headers(405)
-                    #     response = "This species always lives in colonies and are never found alone."
                 else:
                     self._set_headers(200)
                     response = get_all_snakes()
@@ -107,6 +101,33 @@ class HandleRequests(BaseHTTPRequestHandler):
                 new_snake = create_snake(post_body)
 
         self.wfile.write(json.dumps(new_snake).encode())
+
+    def do_DELETE(self):
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
+        # Delete a single order from the list
+        if resource == "snakes":
+            # Set a 204 response code
+            self._set_headers(204)
+            response = {}
+        else:
+            self._set_headers(404)
+            response = {}
+
+        # Encode the new order and send in response
+        self.wfile.write(response.encode())
+
+    def do_PUT(self):
+        """Handles PUT requests to the server """
+        (resource, id) = self.parse_url(self.path)
+        # Delete a single order from the list
+        if resource == "snakes":
+            # Set a 204 response code
+            self._set_headers(204)
+            response = {}
+        else:
+            self._set_headers(404)
+            response = {}
 
     def _set_headers(self, status):
         self.send_response(status)

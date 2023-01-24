@@ -8,52 +8,68 @@ class HandleRequests(BaseHTTPRequestHandler):
     # Here's a class function
     # replace the parse_url function in the class
     def parse_url(self, path):
-        path_params = path.split("/")
+        parsed_url = urlparse(path)
+        path_params = parsed_url.path.split('/')  # ['', 'animals', 1]
         resource = path_params[1]
-        id = None
+        if parsed_url.query:
+            query = parse_qs(parsed_url.query)
+            return (resource, query)
+        pk = None
         try:
-            id = int(path_params[2])
-        except IndexError:
-            pass  # No route parameter exists: /animals
-        except ValueError:
+            pk = int(path_params[2])
+        except (IndexError, ValueError):
             pass
-        return (resource, id)
+        return (resource, pk)
 
     def do_GET(self):
         """Handles GET requests to the server """
         response = {}  # Default response
+        parsed = self.parse_url(self.path)
         # Parse the URL and capture the tuple that is returned
-        (resource, id) = self.parse_url(self.path)
-        if resource == "species":
-            if id is not None:
-                self._set_headers(200)
-                response = get_single_species(id)
+        
+        if '?' not in self.path:
+            (resource, id) = parsed
+            if resource == "species":
+                if id is not None:
+                    self._set_headers(200)
+                    response = get_single_species(id)
+
+                else:
+                    self._set_headers(200)
+                    response = get_all_species()
+
+            elif resource == "snakes":
+                if id is not None:
+                    self._set_headers(200)
+                    response = get_single_snakes(id)
+
+                    # if "species" == 2:
+                    #     self._set_headers(200)
+                    #     response = get_single_snakes(id)
+                    # else:
+                    #     self._set_headers(405)
+                    #     response = "This species always lives in colonies and are never found alone."
+                else:
+                    self._set_headers(200)
+                    response = get_all_snakes()
+
+            elif resource == "owners":
+                if id is not None:
+                    self._set_headers(200)
+                    response = get_single_owners(id)
+
+                else:
+                    self._set_headers(200)
+                    response = get_all_owners()
 
             else:
-                self._set_headers(200)
-                response = get_all_species()
-
-        elif resource == "snakes":
-            if id is not None:
-                self._set_headers(200)
-                response = get_single_snakes(id)
-
-            else:
-                self._set_headers(200)
-                response = get_all_snakes()
-
-        elif resource == "owners":
-            if id is not None:
-                self._set_headers(200)
-                response = get_single_owners(id)
-
-            else:
-                self._set_headers(200)
-                response = get_all_owners()
-
+                self._set_headers(404)
+                response = {}
         else:
-            self._set_headers(404)
-            response = {}
+            (resource, query) = parsed
+            # see if the query dictionary has an email key
+            if query.get('gender') and resource == 'snakes':
+                response = get_snake_by_species(query['gender'][0])
 
         self.wfile.write(json.dumps(response).encode())
 
@@ -68,7 +84,7 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         if resource == "snakes":
             # self._set_headers(201)
-            
+
             if "name" not in post_body:
                 self._set_headers(400)
                 new_snake = "Missing snake name"
@@ -84,8 +100,8 @@ class HandleRequests(BaseHTTPRequestHandler):
             elif "color" not in post_body:
                 self._set_headers(400)
                 new_snake = "Missing color information."
-                
-            else: 
+
+            else:
                 self._set_headers(201)
                 new_snake = create_snake(post_body)
 

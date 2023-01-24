@@ -10,3 +10,5 @@ class Snakes():
         self.species_id = species_id
         self.gender = gender
         self.color = color
+        self.owner = None
+        self.species = None
